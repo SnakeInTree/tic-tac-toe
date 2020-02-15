@@ -5,8 +5,7 @@
 #include <time.h>  
 
 using namespace std;
-
-
+char main_board[27];
 
 //simple string concat function 
 string makeLine(string a, string b, string c) {
@@ -34,8 +33,8 @@ void greetAndInstruct() {
 	string h = makeLine("22", "23", "24");
 	string i = makeLine("25", "26", "27");
 
-	string sep =    "-------------";
-	string sep_bl = "              ";
+	string sep =    "  ----------------";
+	string sep_bl = "                     ";
 
 
 	cout << line1 << endl << line2 << endl << endl;
@@ -155,42 +154,49 @@ bool stringContains(string src, string t) {
 bool checkBoard(string board[], string player) {
 
 	if (stringContains(board[0], player) && stringContains(board[1], player) && stringContains(board[2], player)) {
-		
+		cout << "top";
 		return true;
 	}
 
 	else if (stringContains(board[3], player) && stringContains(board[4], player) && stringContains(board[5], player)) {
-		
+				cout << "top1";
+
 		return true;
 	}
 
 	else if (stringContains(board[6], player) && stringContains(board[7], player) && stringContains(board[8], player)) {
-		
+				cout << "top2";
+
 		return true;
 	}
 
 	else if (stringContains(board[0], player) && stringContains(board[3], player) && stringContains(board[6], player)) {
-		
+				cout << "top3";
+
 		return true;
 	}
 
 	else if (stringContains(board[1], player) && stringContains(board[4], player) && stringContains(board[7], player)) {
-		
+				cout << "top4";
+
 		return true;
 	}
 
 	else if (stringContains(board[2], player) && stringContains(board[5], player) && stringContains(board[8], player)) {
-		
+				cout << "top5";
+
 		return true;
 	}
 
 	else if (stringContains(board[0], player) && stringContains(board[4], player) && stringContains(board[8], player)) {
-		
+				cout << "top6";
+
 		return true;
 	}
 
 	else if (stringContains(board[2], player) && stringContains(board[4], player) && stringContains(board[6], player)) {
-		
+				cout << "top7";
+
 		return true;
 	}
 
@@ -249,11 +255,8 @@ bool checkWinner(char board[]) {
 	bool res = checkBoard(fboard, "x");
 	bool res2 = checkBoard(fboard, "o");
 
-	cout << "x: " << res << endl;
-	cout << "o: " << res2 << endl;
-
-
-	return res;
+	if (res || res2) return true;
+	else return false;
 
 
 }
@@ -287,11 +290,13 @@ bool checkIfLegal(int cNbre, char board[]) {
 
 	if (cNbre < 1 || cNbre > 27) {
 		cout << "This number is not within the acceptable range. Please input a number between 1 and 27 (inclusive)." << endl;
+		cout << endl;
 		return false;
 	}
 	else if (board[cNbre - 1] != 'n') {
 
 		cout << "This space is already occupied. Please input a number between 1 and 27 (inclusive)." << endl;
+		cout << endl;
 		return false;
 	}
 	else {
@@ -500,7 +505,24 @@ int checkTwo(string board[], string player, char ogboard[]) {
 	return -1;
 }
 
+int getRand(char board[]) {
 
+	bool found = false;
+	int r;
+
+	while (!found) {
+
+		srand (time(NULL));
+
+		/* generate random number between 0 and 27: */
+		r = rand() % 28;
+
+		if (board[r] == 'n') found = true;
+
+	}
+
+	return r;
+}
 
 void computerMove(char board[]) {
 
@@ -527,92 +549,61 @@ void computerMove(char board[]) {
 		}
 	}
 
-	int move = checkTwo(fboard, "x", board);
+	int move = checkTwo(fboard, "o", board);
 	
-	int move2 = checkTwo(fboard, "o", board);
+	int move2 = checkTwo(fboard, "x", board);
 
-	if (move < 0) {
-	
-	
-		//do move
-	
-	
-	}	
-	else if(move2 < 0) {
+	int pos = getRand(board);
 
-
-
+	if (move >= 0) {
+		main_board[move] = 'o';
+	}
+	else if (move2 >= 0) {
+		main_board[move2] = 'o';
 	}
 	else {
-
-		int pos = getRand(board);
-
+		main_board[pos] = 'o';
 	}
-
-  	
-
-
-	
 
 }
 
-int getRand(char board[]) {
 
-	bool found = false;
-	int r;
-
-	while (!found) {
-
-		srand (time(NULL));
-
-		/* generate random number between 0 and 27: */
-		r = rand() % 28;
-
-		if (board[r] == 'n') found = true;
-
-	}
-
-	return r;
-}
 
 int main() {
 
 	//setup board
-	char board[27];
 	for (int i=0; i<27; i++) {
-		board[i] = 'n';
+		main_board[i] = 'n';
 	}
 
-	board[0] = 'x';
-	board[1] = 'o';
+	bool done = false;
 
+	greetAndInstruct();
 
+	cout << endl;
 
-	displayBoard(board);
-	computerMove(board);
-	
-	
-	
-	//bool res = checkWinner(board);
+	while (!done) {
 
+		displayBoard(main_board);
 
-	//greetAndInstruct();
-	
-	// bool winnerFound = false;
+		if (checkWinner(main_board)) {
+			cout << "Congratulations! There is a winner!" << endl;
+			exit(0);
+		}
 
+		cout << "Please enter a number between 1 and 27: ";
+		string user_in;
+		cin >> user_in;
 
-	// while (!winnerFound) {
+		int user_int = stoi(user_in);
 
-	// 	displayBoard(board);
-	// 	//get player input 
+		if (!(checkIfLegal(user_int, main_board))) continue;
 
-	// 	//checkLegal
+		main_board[user_int - 1] = 'x';
 
-	// 	//checkWinner 
+		computerMove(main_board);
 
-	// 	//computer move 
-
-	// }
+	}
 
 	return 0;
 }
